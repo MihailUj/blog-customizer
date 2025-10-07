@@ -2,7 +2,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 
 import styles from './ArticleParamsForm.module.scss';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 
 import {
 	fontFamilyOptions,
@@ -18,7 +18,8 @@ import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Separator } from 'src/ui/separator';
-import { FormData } from 'src/index';
+import { FormData } from '../App';
+import { useClose } from '../hooks/useClose';
 
 interface ArticleParamsFormProps {
 	onFormDataSubmit: (formData: FormData) => void;
@@ -28,8 +29,14 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 	onFormDataSubmit,
 }) => {
 	const [form, setForm] = useState<ArticleStateType>(defaultArticleState);
+	const sidebarRef = useRef<HTMLDivElement | null>(null);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	const [isOpen, isOpenSet] = useState(false);
+	useClose({
+		isOpen: isMenuOpen,
+		onClose: () => setIsMenuOpen(false),
+		rootRef: sidebarRef,
+	});
 
 	function handleOnSubmitForm(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -56,11 +63,14 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 	}
 
 	return (
-		<>
-			<ArrowButton isOpen={isOpen} onClick={() => isOpenSet(!isOpen)} />
+		<div ref={sidebarRef}>
+			<ArrowButton
+				isOpen={isMenuOpen}
+				onClick={() => setIsMenuOpen(!isMenuOpen)}
+			/>
 			<aside
 				className={
-					isOpen
+					isMenuOpen
 						? `${styles.container} ${styles.container_open}`
 						: styles.container
 				}>
@@ -127,10 +137,6 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 				</form>
 			</aside>
-			<div
-				className={styles.overlay}
-				onClick={() => isOpenSet(false)}
-				hidden={!isOpen}></div>
-		</>
+		</div>
 	);
 };
