@@ -10,8 +10,6 @@ export function useClose({ isOpen, onClose, rootRef }: TUseClose) {
 	useEffect(() => {
 		const handleClick = (event: MouseEvent) => {
 			const { target } = event;
-			console.log(event.target);
-			console.log(rootRef.current);
 			if (
 				isOpen &&
 				rootRef.current &&
